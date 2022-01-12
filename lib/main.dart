@@ -1,9 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ayto_rider_x/LoginPages/login_Page.dart';
 import 'package:ayto_rider_x/Utilites/edit_text.dart';
 import 'package:ayto_rider_x/Utilites/routers.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 

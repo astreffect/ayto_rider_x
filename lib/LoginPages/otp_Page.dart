@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:ayto_rider_x/brand_colors.dart';
@@ -12,17 +13,17 @@ class OtpPage extends StatefulWidget {
 
   final String phones;
   //OtpPage(this.phones);
-  FirebaseAuth auth = FirebaseAuth.instance;
+
 
   @override
   _OtpPageState createState() => _OtpPageState();
 }
-
+  FirebaseAuth auth = FirebaseAuth.instance;
 class _OtpPageState extends State<OtpPage> {
   final _pinPutController = TextEditingController();
   final _pinPutFocusNode = FocusNode();
-  TextEditingController phoneController = TextEditingController(
-      text: "+923028997122");//What To Do With This ? 
+  //TextEditingController phoneController = TextEditingController(
+     // text: "+923028997122");//What To Do With This ?
   TextEditingController otpController = TextEditingController();//What To Do With This
 
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -141,7 +142,7 @@ class _OtpPageState extends State<OtpPage> {
 
   void loginWithPhone() async {
     auth.verifyPhoneNumber(
-      phoneNumber: phoneController.text,
+      phoneNumber: _pinPutController.text,
       verificationCompleted: (PhoneAuthCredential credential) async {
         await auth.signInWithCredential(credential).then((value) {
           print("You are logged in successfully");
