@@ -3,6 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:ayto_rider_x/brand_colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class OtpPage extends StatefulWidget {
   const OtpPage(this.phones);
@@ -126,4 +129,44 @@ class _OtpPageState extends State<OtpPage> {
       ),
     );
   }
+}
+void loginWithPhone() async {
+  auth.verifyPhoneNumber(
+    phoneNumber: phoneController.text,
+    verificationCompleted: (PhoneAuthCredential credential) async {
+      await auth.signInWithCredential(credential).then((value){
+        print("You are logged in successfully");
+      });
+    },
+    verificationFailed: (FirebaseAuthException e) {
+      print(e.message);
+    },
+    codeSent: (String verificationId, int? resendToken) {
+      otpVisibility = true;
+      verificationID = verificationId;
+      setState(() {});
+    },
+    codeAutoRetrievalTimeout: (String verificationId) {
+
+    },
+  );
+}
+
+void verifyOTP() async {
+
+  PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationID, smsCode: otpController.text);
+
+  await auth.signInWithCredential(credential).then((value){
+    print("You are logged in successfully");
+    Fluttertoast.showToast(
+        msg: "You are logged in successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
+  });
+}
 }

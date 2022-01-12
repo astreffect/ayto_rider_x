@@ -74,6 +74,7 @@ class _LoginPageState extends State<LoginPage> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.0)),
 
       ),
+
     );
 
 
