@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class OtpPage extends StatefulWidget {
-  const OtpPage(this.phones);
+   OtpPage(this.phones);
 
   final String phones;
   //OtpPage(this.phones);
-
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   _OtpPageState createState() => _OtpPageState();
@@ -21,12 +21,20 @@ class OtpPage extends StatefulWidget {
 class _OtpPageState extends State<OtpPage> {
   final _pinPutController = TextEditingController();
   final _pinPutFocusNode = FocusNode();
+  TextEditingController phoneController = TextEditingController(
+      text: "+923028997122");//What To Do With This ? 
+  TextEditingController otpController = TextEditingController();//What To Do With This
+
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  bool otpVisibility = false;
+
+  String verificationID = "";
   final button = SizedBox(
       width: 100,
       height: 35,
       child: ElevatedButton(
-        onPressed: (){
-
+        onPressed: () {
           print("done");
 
           // Navigator.of(context).push(
@@ -49,10 +57,9 @@ class _OtpPageState extends State<OtpPage> {
     color: BrandColors.button,
     borderRadius: BorderRadius.circular(5.0),
   );
+
   @override
   Widget build(BuildContext context) {
-
-
     return Material(
       child: Column(
         children: [
@@ -95,10 +102,10 @@ class _OtpPageState extends State<OtpPage> {
             child: Container(
               decoration: BoxDecoration(
                   color: BrandColors.editText,
-                  borderRadius: BorderRadius.circular(10.0 )
+                  borderRadius: BorderRadius.circular(10.0)
               ),
               child: Padding(
-                  padding:const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: PinPut(
                     eachFieldWidth: 45.0,
                     eachFieldHeight: 45.0,
@@ -113,7 +120,8 @@ class _OtpPageState extends State<OtpPage> {
                     followingFieldDecoration: pinPutDecoration,
                     pinAnimationType: PinAnimationType.scale,
                     textStyle:
-                    const TextStyle(color: Colors.black, fontSize: 20.0, height: 1),
+                    const TextStyle(
+                        color: Colors.black, fontSize: 20.0, height: 1),
                   )
               ),
             ),
@@ -129,44 +137,46 @@ class _OtpPageState extends State<OtpPage> {
       ),
     );
   }
-}
-void loginWithPhone() async {
-  auth.verifyPhoneNumber(
-    phoneNumber: phoneController.text,
-    verificationCompleted: (PhoneAuthCredential credential) async {
-      await auth.signInWithCredential(credential).then((value){
-        print("You are logged in successfully");
-      });
-    },
-    verificationFailed: (FirebaseAuthException e) {
-      print(e.message);
-    },
-    codeSent: (String verificationId, int? resendToken) {
-      otpVisibility = true;
-      verificationID = verificationId;
-      setState(() {});
-    },
-    codeAutoRetrievalTimeout: (String verificationId) {
 
-    },
-  );
-}
 
-void verifyOTP() async {
+  void loginWithPhone() async {
+    auth.verifyPhoneNumber(
+      phoneNumber: phoneController.text,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await auth.signInWithCredential(credential).then((value) {
+          print("You are logged in successfully");
+        });
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        print(e.message);
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        otpVisibility = true;
+        verificationID = verificationId;
+        setState(() {});
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
 
-  PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationID, smsCode: otpController.text);
-
-  await auth.signInWithCredential(credential).then((value){
-    print("You are logged in successfully");
-    Fluttertoast.showToast(
-        msg: "You are logged in successfully",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0
+      },
     );
-  });
-}
+  }
+
+  void verifyOTP() async {
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationID, smsCode: otpController.text);
+
+    await auth.signInWithCredential(credential).then((value) {
+      print("You are logged in successfully");
+      Fluttertoast.showToast(
+          msg: "You are logged in successfully",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    });
+  }
+
 }
